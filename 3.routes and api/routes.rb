@@ -1,11 +1,5 @@
 Rails.application.routes.draw do
-  resources :articles do
-    collection do
-      get 'archived'
-      get 'recent'
-      delete 'bulk_delete'
-    end
-  end
+  get 'profile', to: 'users#show', as: 'user_profile'
 end
 
 
@@ -75,5 +69,36 @@ class ArticlesController < ApplicationController
   def bulk_delete
     Article.where(id: params[:article_ids]).destroy_all
     redirect_to articles_path, notice: 'Selected articles were successfully deleted.'
+  end
+end
+
+
+<table>
+  <% @articles.each do |article| %>
+    <tr>
+      <td><%= article.title %></td>
+      <td><%= link_to 'Show', admin_article_path(article) %></td>
+      <td><%= link_to 'Edit', edit_admin_article_path(article) %></td>
+      <td><%= link_to 'Delete', admin_article_path(article), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
+</table>
+
+
+<!-- app/views/users/show.html.erb -->
+
+<h1>User Profile</h1>
+<p>Viewing profile for <%= @user.name %>.</p>
+
+<%= link_to 'Edit Profile', user_profile_path %>
+
+
+class UsersController < ApplicationController
+  def show
+    @user = User.find(params[:id])
+  end
+
+  def edit
+    @user = current_user
   end
 end
